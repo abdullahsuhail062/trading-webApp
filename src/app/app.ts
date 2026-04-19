@@ -1,12 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { AuthComponent } from './components/auth/auth';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
+  imports: [AuthComponent],
+  template: '<app-auth></app-auth>',
   styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('trading-webApp');
-}
+export class App {}
