@@ -6,7 +6,7 @@ import { AuthStore } from '../auth/auth.store';
 // endpoints that don't need a token
 const PUBLIC_ENDPOINTS = ['auth/login', 'auth/register'];
 
-export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authStore = inject(AuthStore);
   const platformId = inject(PLATFORM_ID);
 
