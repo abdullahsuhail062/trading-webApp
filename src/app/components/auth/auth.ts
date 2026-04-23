@@ -1,6 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { error } from 'console';
+
 
 @Component({
   selector: 'app-auth',
@@ -12,6 +15,8 @@ import { FormsModule } from '@angular/forms';
 export class AuthComponent {
   isSignUp = signal(false);
   showPassword = signal(false);
+
+  constructor(private authService: AuthService) {}
   
   // Form data
   signInData = {
@@ -20,6 +25,7 @@ export class AuthComponent {
     rememberMe: false
   };
   
+  
   signUpData = {
     name: '',
     email: '',
@@ -27,6 +33,8 @@ export class AuthComponent {
     confirmPassword: '',
     agreeTerms: false
   };
+
+
 
   toggleMode() {
     this.isSignUp.update(v => !v);
@@ -37,10 +45,14 @@ export class AuthComponent {
   }
 
   onSignIn() {
-    console.log('Sign in:', this.signInData);
+    this.authService.login(this.signInData).subscribe({next: (res) =>{console.log('data received from backend',res);
+    }, error: (err) =>{console.log(err);
+}})
   }
 
   onSignUp() {
-    console.log('Sign up:', this.signUpData);
+    this.authService.register(this.signUpData).subscribe({next: (res) => {console.log('data recieved from backend', res);}, error: (err) => {console.log(err);
+    }})
+    
   }
 }
