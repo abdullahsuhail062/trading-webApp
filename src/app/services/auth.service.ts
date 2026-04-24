@@ -45,7 +45,7 @@ export class AuthService {
     );
   }
 
-  // ─── Register ─────────────────────────────────────────
+  // ─── Register ────────────────────────────────────────
   register(payload: RegisterPayload) {
     this.authStore.setLoading(true);
     return this.apiService.post<AuthResponse>('users/registerUser', payload).pipe(

@@ -45,6 +45,8 @@ export class AuthComponent {
   }
 
   onSignIn() {
+    console.log(this.signInData,"data tracked!");
+    
     this.authService.login(this.signInData).subscribe({next: (res) =>{console.log('data received from backend',res);
     }, error: (err) =>{console.log(err);
 }})
