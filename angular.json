@@ -1,78 +1,112 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "cli": {
-    "packageManager": "npm",
-    "analytics": "586ab14e-4e2c-48cf-902e-6d8a5a9745ac"
+"version": 1,
+"cli": {
+"packageManager": "npm",
+"analytics": "586ab14e-4e2c-48cf-902e-6d8a5a9745ac"
   },
-  "newProjectRoot": "projects",
-  "projects": {
-    "trading-webApp": {
-      "projectType": "application",
-      "schematics": {},
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "assets": [
+"newProjectRoot": "projects",
+"projects": {
+"trading-webApp": {
+"projectType": "application",
+"schematics": {},
+"root": "",
+"sourceRoot": "src",
+"prefix": "app",
+"architect": {
+"build": {
+"builder": "@angular/build:application",
+"options": {
+"browser": "src/main.ts",
+"tsConfig": "tsconfig.app.json",
+"assets": [
               {
-                "glob": "**/*",
-                "input": "public"
+"glob": "**/*",
+"input": "public"
               }
             ],
-            "styles": ["src/material-theme.scss", "src/styles.css"],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "security": {
-              "allowedHosts": []
+"styles": ["src/material-theme.scss", "src/styles.css"],
+"server": "src/main.server.ts",
+"outputMode": "server",
+"security": {
+"allowedHosts": []
             },
-            "ssr": {
-              "entry": "src/server.ts"
+"ssr": {
+"entry": "src/server.ts"
             }
           },
-          "configurations": {
-            "production": {
-              "budgets": [
+"configurations": {
+"production": {
+"budgets": [
                 {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+"type": "initial",
+"maximumWarning": "500kB",
+"maximumError": "1MB"
                 },
                 {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+"type": "anyComponentStyle",
+"maximumWarning": "4kB",
+"maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+"outputHashing": "all"
             },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
+            "configurations": {
+  "production": {
+    "fileReplacements": [
+      {
+        "replace": "src/environments/environment.ts",
+        "with": "src/environments/environment.prod.ts"
+      }
+    ],
+    "budgets": [
+      {
+        "type": "initial",
+        "maximumWarning": "500kB",
+        "maximumError": "1MB"
+      },
+      {
+        "type": "anyComponentStyle",
+        "maximumWarning": "4kB",
+        "maximumError": "8kB"
+      }
+    ],
+    "outputHashing": "all"
+  },
+  "development": {
+    "fileReplacements": [
+      {
+        "replace": "src/environments/environment.ts",
+        "with": "src/environments/environment.ts"
+      }
+    ],
+    "optimization": false,
+    "extractLicenses": false,
+    "sourceMap": true
+  }
+},
+"development": {
+"optimization": false,
+"extractLicenses": false,
+"sourceMap": true
             }
           },
-          "defaultConfiguration": "production"
+"defaultConfiguration": "production"
         },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "trading-webApp:build:production"
+"serve": {
+"builder": "@angular/build:dev-server",
+"configurations": {
+"production": {
+"buildTarget": "trading-webApp:build:production"
             },
-            "development": {
-              "buildTarget": "trading-webApp:build:development"
+"development": {
+"buildTarget": "trading-webApp:build:development"
             }
           },
-          "defaultConfiguration": "development"
+"defaultConfiguration": "development"
         },
-        "test": {
-          "builder": "@angular/build:unit-test"
+"test": {
+"builder": "@angular/build:unit-test"
         }
       }
     }
