@@ -41,7 +41,7 @@ export class AuthService {
   // ─── Login ───────────────────────────────────────────
   login(payload: LoginPayload) {
     this.authStore.setLoading(true);
-    return this.apiService.post<AuthResponse>('users/loginUser', payload).pipe(
+    return this.apiService.post<AuthResponse>('api/login', payload).pipe(
       tap((res) => {
         this.authStore.setUser(res.user, res.token);
         this.authStore.setLoading(false);
@@ -58,7 +58,7 @@ export class AuthService {
   // ─── Register ────────────────────────────────────────
   register(payload: RegisterPayload) {
     this.authStore.setLoading(true);
-    return this.apiService.post<AuthResponse>('users/registerUser', payload).pipe(
+    return this.apiService.post<AuthResponse>('api/register', payload).pipe(
       tap((res) => {
         this.authStore.setUser(res.user, res.token);
         this.authStore.setLoading(false);
