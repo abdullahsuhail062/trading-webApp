@@ -52,7 +52,7 @@ export class AuthComponent {
   }
 
   onSignUp() {
-    this.authService.register(this.signUpData).subscribe({next: (res) => {console.log('data recieved from backend', res);}, error: (err) => {console.log(err);
+    this.authService.register(this.signUpData).subscribe({next: (res) => {}, error: (err) => {console.log(err);
     }})
     
   }
