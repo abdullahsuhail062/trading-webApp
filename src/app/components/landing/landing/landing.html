@@ -1,0 +1,232 @@
+<div class="min-h-screen bg-[#0A0A08] text-[#E8E4D6] font-mono">
+
+  <!-- Nav -->
+  <nav class="sticky top-0 z-50 bg-[#0A0A08]/95 backdrop-blur border-b border-[#C9A84C]/10 px-4 md:px-8 py-4 flex items-center justify-between">
+    <div class="font-serif text-xl font-semibold text-[#C9A84C] tracking-wide">
+      Gold<span class="text-[#E8E4D6] italic">Ex</span>
+    </div>
+    <ul class="hidden md:flex gap-8 text-[11px] tracking-widest text-[#8A8470] list-none">
+      <li class="cursor-pointer hover:text-[#C9A84C] transition-colors">MARKETS</li>
+      <li class="cursor-pointer hover:text-[#C9A84C] transition-colors">CHARTS</li>
+      <li class="cursor-pointer hover:text-[#C9A84C] transition-colors">PORTFOLIO</li>
+      <li class="cursor-pointer hover:text-[#C9A84C] transition-colors">NEWS</li>
+    </ul>
+    <div class="hidden md:flex gap-3 items-center">
+      <button (click)="navigateToAuth()"
+        class="text-[11px] tracking-widest text-[#8A8470] border border-[#C9A84C]/30 px-4 py-2 rounded-sm hover:text-[#C9A84C] hover:border-[#C9A84C] transition-all">
+        Sign in
+      </button>
+      <button (click)="navigateToAuth()"
+        class="text-[11px] tracking-widest text-[#0A0A08] bg-[#C9A84C] px-5 py-2 rounded-sm hover:bg-[#E8D5A3] transition-all font-medium">
+        Start trading
+      </button>
+    </div>
+    <button (click)="mobileMenuOpen = !mobileMenuOpen"
+      class="md:hidden text-[#8A8470] hover:text-[#C9A84C] transition-colors text-xl">
+      {{ mobileMenuOpen ? '✕' : '☰' }}
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  @if (mobileMenuOpen) {
+    <div class="md:hidden bg-[#111109] border-b border-[#C9A84C]/10 px-6 py-4 flex flex-col gap-4">
+      <span class="text-[11px] tracking-widest text-[#8A8470] cursor-pointer hover:text-[#C9A84C]">MARKETS</span>
+      <span class="text-[11px] tracking-widest text-[#8A8470] cursor-pointer hover:text-[#C9A84C]">CHARTS</span>
+      <span class="text-[11px] tracking-widest text-[#8A8470] cursor-pointer hover:text-[#C9A84C]">PORTFOLIO</span>
+      <span class="text-[11px] tracking-widest text-[#8A8470] cursor-pointer hover:text-[#C9A84C]">NEWS</span>
+      <div class="flex flex-col gap-2 pt-2 border-t border-[#C9A84C]/10">
+        <button (click)="navigateToAuth()"
+          class="text-[11px] tracking-widest text-[#8A8470] border border-[#C9A84C]/30 px-4 py-2 rounded-sm hover:text-[#C9A84C] transition-all">
+          Sign in
+        </button>
+        <button (click)="navigateToAuth()"
+          class="text-[11px] tracking-widest text-[#0A0A08] bg-[#C9A84C] px-4 py-2 rounded-sm hover:bg-[#E8D5A3] transition-all font-medium">
+          Start trading
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Live bar -->
+  <div class="bg-[#111109] border-b border-[#C9A84C]/10 px-4 md:px-8 py-2 flex justify-between items-center">
+    <span class="text-[10px] text-[#8A8470] tracking-widest flex items-center gap-2">
+      <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"></span>
+      LIVE MARKET DATA
+    </span>
+    <span class="text-[10px] text-[#8A8470] hidden sm:block">{{ currentTime }}</span>
+  </div>
+
+  <!-- Market strip -->
+  <div class="bg-[#111109] border-b border-[#C9A84C]/10 px-4 py-3 flex gap-6 overflow-x-auto scrollbar-hide">
+    <div class="flex items-center gap-3 whitespace-nowrap text-[11px] min-w-fit">
+      <span class="text-[#8A8470]">XAU/USD</span>
+      <span class="text-[#E8E4D6] font-medium">{{ price() }}</span>
+      <span class="text-[10px] px-2 py-0.5 rounded-sm"
+        [class]="isUp() ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'">
+        {{ priceChange() }}
+      </span>
+    </div>
+    @for (m of markets; track m.name) {
+      <div class="flex items-center gap-3 whitespace-nowrap text-[11px] min-w-fit">
+        <span class="text-[#8A8470]">{{ m.name }}</span>
+        <span class="text-[#E8E4D6] font-medium">{{ m.price }}</span>
+        <span class="text-[10px] px-2 py-0.5 rounded-sm"
+          [class]="m.up ? 'text-green-400 bg-green-400/10' : 'text-red-400 bg-red-400/10'">
+          {{ m.change }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Hero -->
+  <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+    <div>
+      <div class="inline-flex items-center gap-4 bg-[#1A1A14] border border-[#C9A84C]/20 rounded px-4 py-3 mb-6">
+        <div>
+          <div class="text-[9px] tracking-widest text-[#8A8470] mb-1">GOLD SPOT</div>
+          <div class="font-serif text-2xl md:text-3xl text-[#C9A84C]">{{ price() }}</div>
+        </div>
+        <span class="text-[11px] px-2 py-1 rounded-sm font-medium"
+          [class]="isUp() ? 'text-green-400 bg-green-400/15' : 'text-red-400 bg-red-400/15'">
+          {{ priceChange() }}
+        </span>
+        <div class="text-[10px] text-[#8A8470]">oz / USD</div>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight mb-4">
+        Trade <em class="text-[#C9A84C] not-italic">gold</em><br>like a pro.
+      </h1>
+      <p class="text-[12px] text-[#8A8470] leading-relaxed mb-6 max-w-md tracking-wide">
+        Real-time gold market data, advanced charting, and institutional-grade execution. Access global precious metals markets with razor-thin spreads.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button (click)="navigateToAuth()"
+          class="text-[12px] tracking-widest text-[#0A0A08] bg-[#C9A84C] px-6 py-3 rounded-sm hover:bg-[#E8D5A3] transition-all font-medium">
+          Open account ↗
+        </button>
+        <button (click)="navigateToAuth()"
+          class="text-[12px] tracking-widest text-[#8A8470] border border-[#C9A84C]/30 px-6 py-3 rounded-sm hover:text-[#C9A84C] hover:border-[#C9A84C] transition-all">
+          View demo
+        </button>
+      </div>
+    </div>
+
+    <!-- Chart card -->
+    <div class="bg-[#111109] border border-[#C9A84C]/15 rounded p-4 md:p-5">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <div class="text-[10px] tracking-widest text-[#8A8470]">XAU/USD — GOLD SPOT PRICE</div>
+          <div class="font-serif text-xl md:text-2xl text-[#C9A84C] mt-1">{{ price() }}</div>
+        </div>
+        <div class="flex gap-1">
+          @for (tf of timeframes; track tf) {
+            <button (click)="setTimeframe(tf)"
+              class="text-[10px] tracking-wide px-2 py-1 rounded-sm border transition-all"
+              [class]="activeTimeframe === tf
+                ? 'bg-[#C9A84C]/10 text-[#C9A84C] border-[#C9A84C]/40'
+                : 'text-[#8A8470] border-[#C9A84C]/15 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10'">
+              {{ tf }}
+            </button>
+          }
+        </div>
+      </div>
+      <div class="relative w-full h-48 md:h-56">
+        <canvas id="goldChart" role="img" aria-label="Gold price chart XAU/USD">Gold price data.</canvas>
+      </div>
+      <div class="grid grid-cols-3 mt-4 pt-4 border-t border-[#C9A84C]/10">
+        <div class="text-center">
+          <div class="text-[9px] tracking-widest text-[#8A8470] mb-1">OPEN</div>
+          <div class="text-[13px] font-medium text-[#E8E4D6]">$2,309.80</div>
+        </div>
+        <div class="text-center">
+          <div class="text-[9px] tracking-widest text-[#8A8470] mb-1">HIGH</div>
+          <div class="text-[13px] font-medium text-green-400">$2,341.20</div>
+        </div>
+        <div class="text-center">
+          <div class="text-[9px] tracking-widest text-[#8A8470] mb-1">LOW</div>
+          <div class="text-[13px] font-medium text-red-400">$2,298.40</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 md:py-14">
+    <div class="text-[10px] tracking-[0.2em] text-[#C9A84C] mb-6 uppercase">Why GoldEx</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#C9A84C]/10 border border-[#C9A84C]/10">
+      @for (f of features; track f.title) {
+        <div class="bg-[#111109] p-5 md:p-6 hover:bg-[#1A1A14] transition-colors">
+          <div class="w-8 h-8 bg-[#C9A84C]/10 border border-[#C9A84C]/30 rounded-sm flex items-center justify-center text-[#C9A84C] text-sm mb-4">
+            {{ f.icon }}
+          </div>
+          <div class="text-[13px] font-medium text-[#E8E4D6] mb-2 tracking-wide">{{ f.title }}</div>
+          <div class="text-[11px] text-[#8A8470] leading-relaxed tracking-wide">{{ f.desc }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 md:py-14 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+    <div>
+      <h2 class="font-serif text-3xl md:text-4xl font-semibold leading-tight mb-4">
+        Start trading<br><em class="text-[#C9A84C] not-italic">gold</em> today.
+      </h2>
+      <p class="text-[11px] text-[#8A8470] leading-relaxed mb-8 tracking-wide">
+        Join over 240,000 traders who trust GoldEx for their precious metals portfolio. No minimum deposit required.
+      </p>
+      <div class="flex gap-8 md:gap-12">
+        <div>
+          <div class="font-serif text-2xl md:text-3xl text-[#C9A84C]">240K+</div>
+          <div class="text-[10px] tracking-widest text-[#8A8470] mt-1">Active traders</div>
+        </div>
+        <div>
+          <div class="font-serif text-2xl md:text-3xl text-[#C9A84C]">$4.2B</div>
+          <div class="text-[10px] tracking-widest text-[#8A8470] mt-1">Daily volume</div>
+        </div>
+        <div>
+          <div class="font-serif text-2xl md:text-3xl text-[#C9A84C]">0.01%</div>
+          <div class="text-[10px] tracking-widest text-[#8A8470] mt-1">Spread</div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-[#111109] border border-[#C9A84C]/20 rounded p-6 md:p-8">
+      <h3 class="font-serif text-xl text-[#C9A84C] mb-5">Create free account</h3>
+      <div class="flex flex-col gap-4">
+        <div>
+          <label class="block text-[10px] tracking-widest text-[#8A8470] mb-2">FULL NAME</label>
+          <input type="text" placeholder="John Smith"
+            class="w-full bg-[#0A0A08] border border-[#C9A84C]/20 text-[#E8E4D6] font-mono text-[12px] px-3 py-2.5 rounded-sm outline-none focus:border-[#C9A84C]/50 placeholder-[#8A8470] transition-colors" />
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-[#8A8470] mb-2">EMAIL ADDRESS</label>
+          <input type="email" placeholder="john@example.com"
+            class="w-full bg-[#0A0A08] border border-[#C9A84C]/20 text-[#E8E4D6] font-mono text-[12px] px-3 py-2.5 rounded-sm outline-none focus:border-[#C9A84C]/50 placeholder-[#8A8470] transition-colors" />
+        </div>
+        <div>
+          <label class="block text-[10px] tracking-widest text-[#8A8470] mb-2">PASSWORD</label>
+          <input type="password" placeholder="••••••••"
+            class="w-full bg-[#0A0A08] border border-[#C9A84C]/20 text-[#E8E4D6] font-mono text-[12px] px-3 py-2.5 rounded-sm outline-none focus:border-[#C9A84C]/50 placeholder-[#8A8470] transition-colors" />
+        </div>
+        <button (click)="navigateToAuth()"
+          class="w-full text-[12px] tracking-widest text-[#0A0A08] bg-[#C9A84C] py-3 rounded-sm hover:bg-[#E8D5A3] transition-all font-medium mt-1">
+          Create account ↗
+        </button>
+        <p class="text-[10px] text-[#8A8470] text-center leading-relaxed">
+          By signing up you agree to our Terms of Service and Privacy Policy
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-[#C9A84C]/10 px-4 md:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="font-serif text-lg text-[#C9A84C]">Gold<span class="text-[#E8E4D6] italic">Ex</span></div>
+    <div class="text-[10px] text-[#8A8470] tracking-wide">© 2026 GoldEx. All rights reserved.</div>
+    <div class="flex gap-6 text-[10px] text-[#8A8470] tracking-widest">
+      <span class="cursor-pointer hover:text-[#C9A84C] transition-colors">PRIVACY</span>
+      <span class="cursor-pointer hover:text-[#C9A84C] transition-colors">TERMS</span>
+      <span class="cursor-pointer hover:text-[#C9A84C] transition-colors">SUPPORT</span>
+    </div>
+  </footer>
+
+</div>
