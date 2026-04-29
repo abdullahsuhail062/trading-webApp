@@ -45,7 +45,6 @@ export class AuthService {
       tap((res) => {
         this.authStore.setUser(res.user, res.token);
         this.authStore.setLoading(false);
-        alert('Logged in successfully!')
         this.router.navigate(['/dashboard']);
       }),
       catchError((error) => {
