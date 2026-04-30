@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -9,6 +10,6 @@ import { authInterceptor } from './services/auth.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),provideHttpClient(withFetch(),withInterceptors([authInterceptor])),
-    provideRouter(routes), provideClientHydration(withEventReplay(),)
+    provideRouter(routes), provideClientHydration(withEventReplay(),),provideCharts(withDefaultRegisterables()),
   ]
 };
