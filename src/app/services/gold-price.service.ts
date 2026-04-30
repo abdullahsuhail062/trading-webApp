@@ -1,6 +1,6 @@
 // src/app/services/gold-price.service.ts
 import { Injectable, signal, computed } from '@angular/core';
-import { BASE_PRICE, INITIAL_PRICE } from '../components/landing/landing.data';
+import { BASE_PRICE, INITIAL_PRICE } from '../chart/landing.data';
 
 @Injectable({ providedIn: 'root' })
 export class GoldPriceService {

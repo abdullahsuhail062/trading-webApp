@@ -6,12 +6,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Chart, registerables } from 'chart.js'; 
-import { GoldPriceService } from '../../../services/gold-price.service';
-import { getChartConfig } from '../chart.config';
+import { GoldPriceService } from '../../services/gold-price.service';
+import { getChartConfig } from '../../chart/chart.config';
 import {
   FEATURES, MARKETS, DATASETS,
   TIMEFRAMES
-} from '../landing.data';
+} from '../../chart/landing.data';
 
 Chart.register(...registerables);
 

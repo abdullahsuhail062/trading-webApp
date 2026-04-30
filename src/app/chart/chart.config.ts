@@ -1,4 +1,4 @@
-// src/app/components/landing/chart.config.ts
+// src/app/landing/chart.config.ts
 import { Chart, registerables, ChartConfiguration } from 'chart.js';
 
 // ✅ register once here — not in component

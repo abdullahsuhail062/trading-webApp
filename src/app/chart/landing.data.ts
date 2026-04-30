@@ -1,4 +1,4 @@
-// src/app/components/landing/landing.data.ts
+// src/app/chart/landing.data.ts
 export const FEATURES = [
   { icon: '◈', title: 'Real-time pricing', desc: 'Live spot prices with millisecond updates from major global exchanges.' },
   { icon: '▦', title: 'Advanced charting', desc: 'Professional candlestick charts, 50+ indicators, and drawing tools.' },
