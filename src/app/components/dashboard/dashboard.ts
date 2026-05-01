@@ -3,10 +3,12 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
 import { AuthService } from '../../services/auth.service';
 import { ForexNews } from '../../models/forex-news.model';
+import { CommonModule, DatePipe } from '@angular/common';
+
 
 @Component({
   selector: 'app-dashboard',
-  imports: [BaseChartDirective],
+  imports: [BaseChartDirective,CommonModule, DatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
