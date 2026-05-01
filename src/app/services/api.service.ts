@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../enviroments/enviroment.prod';
+import { ForexNews } from '../models/forex-news.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -29,4 +30,9 @@ export class ApiService {
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
   }
+
+  // Clean approach in your ForexApiService
+getForexNews(endpoint: string): Observable<ForexNews[]> {
+  return this.http.get<ForexNews[]>(`${this.baseUrl}/${endpoint}`);
+}
 }

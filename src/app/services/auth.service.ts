@@ -88,6 +88,11 @@ export class AuthService {
     return this.authStore.isLoggedIn();
   }
 
+
+  getForexNews() {
+    return this.apiService.getForexNews('api/getForexNews')
+  }
+
   // ─── Load user from localStorage on app start ─────────
   // ⚠️ optional — AuthStore.onInit() already does this
   loadUserFromStorage() {
