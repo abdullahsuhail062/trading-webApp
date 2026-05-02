@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import {publicGuard} from './auth/public-guard.ts'
-import {authGuard} from './auth/auth-guard.ts'
+import {publicGuard} from './auth/public-guard'
+import {authGuard} from './auth/auth-guard'
 import { LandingComponent } from './components/landing/landing';
 import { AuthComponent } from './components/auth/auth';
 import { Dashboard } from './components/dashboard/dashboard';
