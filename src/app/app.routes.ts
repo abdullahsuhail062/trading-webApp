@@ -6,8 +6,8 @@ import { AuthComponent } from './components/auth/auth';
 import { Dashboard } from './components/dashboard/dashboard';
 import { from } from 'rxjs';
 export const routes: Routes = [
-  { path: '', component: LandingComponent },
+  { path: '', component: LandingComponent, canActivate: [publicGuard] },
   {path: 'auth', component: AuthComponent, canActivate: [publicGuard]},
     {path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: '' }
 ];
