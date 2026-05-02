@@ -9,5 +9,5 @@ export const routes: Routes = [
   { path: '', component: LandingComponent },
   {path: 'auth', component: AuthComponent, canActivate: [publicGuard]},
     {path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: 'dashboard' }
 ];
