@@ -1,11 +1,10 @@
 import { Inject, Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
-import { EMPTY, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 import { AuthStore, AuthUser } from '../auth/auth-store'; 
 import { ApiService } from './api.service';  // ✅ import ApiService
 import { isPlatformBrowser } from '@angular/common';
-
 
 interface LoginPayload {
   email: string;
@@ -32,15 +31,15 @@ interface AuthResponse {
 }
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private platformId = inject(PLATFORM_ID);
 constructor(private authStore: AuthStore, private apiService: ApiService, private router: Router) {
    
 }
 
   // ─── Init user from cookie session ───
   initUser() {
-    const platformId = inject(PLATFORM_ID)
-    if (!isPlatformBrowser(platformId)) {
-    return EMPTY;
+    if (!isPlatformBrowser(this.platformId)) {
+    return EMPTY
   }
     return this.apiService.get<AuthUser>('api/me').pipe(
       tap((user) => {
