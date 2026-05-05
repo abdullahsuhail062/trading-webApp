@@ -47,15 +47,11 @@ newsList: ForexNews[] = [];
   ngOnInit(): void {
     this.authService.getForexNews().subscribe({
       next: (data) =>{ console.log('data fetched from ', data);
-      
-       this.newsList = data},
-      error: (err) => console.error('Failed to fetch news', err)
-    });
   }
 
 
+})}}
 
 
 
 
-}

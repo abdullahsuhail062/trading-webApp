@@ -31,8 +31,6 @@ export class ApiService {
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}/${endpoint}`);
   }
-
-  // Clean approach in your ForexApiService
 getForexNews(endpoint: string): Observable<ForexNews[]> {
   return this.http.get<ForexNews[]>(`${this.baseUrl}/${endpoint}`);
 }
