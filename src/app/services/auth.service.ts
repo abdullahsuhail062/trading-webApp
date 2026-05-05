@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { AuthStore } from '../auth/auth.store';
+import { AuthStore, AuthUser } from '../auth/auth-store'; 
 import { ApiService } from './api.service';  // ✅ import ApiService
 
 interface LoginPayload {
@@ -17,9 +17,7 @@ interface RegisterPayload {
 }
 
 interface AuthResponse {
-  token: string;
   user: {
-  
   id: number;
   name: string;
   email: string;
@@ -30,76 +28,76 @@ interface AuthResponse {
   role: string;
 }
 }
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiService = inject(ApiService); // ✅ use ApiService
+
+  private apiService = inject(ApiService);
   private router = inject(Router);
   private authStore = inject(AuthStore);
 
- 
-  // ─── Login ───────────────────────────────────────────
+  // ─── Init user from cookie session ───
+  initUser() {
+    return this.apiService.get<AuthUser>('api/me').pipe(
+      tap((user) => {
+        this.authStore.setUser(user);
+        this.authStore.setLoading(false);
+      }),
+      catchError((error) => {
+        this.authStore.clear();
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // ─── Login ───
   login(payload: LoginPayload) {
     this.authStore.setLoading(true);
+
     return this.apiService.post<AuthResponse>('api/auth/login', payload).pipe(
       tap((res) => {
-        this.authStore.setUser(res.user, res.token);
-        this.authStore.setLoading(false);
+        // cookie already set by backend
+        this.authStore.setUser(res.user);
         this.router.navigate(['/dashboard']);
       }),
       catchError((error) => {
-        this.authStore.setLoading(false);
+        this.authStore.clear();
         return throwError(() => error);
       })
     );
   }
 
-  // ─── Register ────────────────────────────────────────
+  // ─── Register ───
   register(payload: RegisterPayload) {
     this.authStore.setLoading(true);
+
     return this.apiService.post<AuthResponse>('api/auth/register', payload).pipe(
       tap((res) => {
-        this.authStore.setUser(res.user, res.token);
-        this.authStore.setLoading(false);
-        console.log('Auth response!', res);
-        
+        this.authStore.setUser(res.user);
         this.router.navigate(['/dashboard']);
       }),
       catchError((error) => {
-        this.authStore.setLoading(false);
+        this.authStore.clear();
         return throwError(() => error);
       })
     );
   }
 
-  // ─── Logout ───────────────────────────────────────────
+  // ─── Logout (IMPORTANT FIX) ───
   logout() {
-    this.authStore.logout();
-    this.router.navigate(['/login']);
+    return this.apiService.post('api/auth/logout', {}).pipe(
+      tap(() => {
+        this.authStore.clear();
+        this.router.navigate(['/login']);
+      })
+    );
   }
 
-  // ─── Get current token ────────────────────────────────
-  getToken(): string | null {
-    return this.authStore.token();
-  }
-
-  // ─── Check if logged in ───────────────────────────────
+  // ─── Auth check ───
   isLoggedIn(): boolean {
     return this.authStore.isLoggedIn();
   }
 
-
   getForexNews() {
-    return this.apiService.getForexNews('api/getForexNews')
-  }
-
-  // ─── Load user from localStorage on app start ─────────
-  // ⚠️ optional — AuthStore.onInit() already does this
-  loadUserFromStorage() {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (token && user) {
-      this.authStore.setUser(JSON.parse(user), token);
-    }
+    return this.apiService.get('api/getForexNews');
   }
 }
