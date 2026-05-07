@@ -45,12 +45,14 @@ newsList: ForexNews[] = [];
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.authService.getForexNews().subscribe({
-      next: (data) =>{ console.log('data fetched from ', data);
+    // this.authService.getForexNews().subscribe({
+    //   next: (data) =>{ console.log('data fetched from ', data);
+//   }
+
+
+// })}
   }
-
-
-})}}
+}
 
 
 

@@ -101,7 +101,7 @@ constructor(private authStore: AuthStore, private apiService: ApiService, privat
     return this.authStore.isLoggedIn();
   }
 
-  // getForexNews() {
-  //   return this.apiService.get('api/getForexNews');
-  // }
+  getForexNews() {
+    return this.apiService.get('api/getForexNews');
+  }
 }
