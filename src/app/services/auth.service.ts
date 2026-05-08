@@ -37,7 +37,7 @@ constructor(private authStore: AuthStore, private apiService: ApiService, privat
 }
 
   // ─── Init user from cookie session ───
-  initialUser() {
+  initUser() {
     if (!isPlatformBrowser(this.platformId)) {
     return EMPTY
   }
