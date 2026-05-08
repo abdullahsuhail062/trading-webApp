@@ -37,7 +37,7 @@ constructor(private authStore: AuthStore, private apiService: ApiService, privat
 }
 
   // ─── Init user from cookie session ───
-  initUser() {
+  initialUser() {
     if (!isPlatformBrowser(this.platformId)) {
     return EMPTY
   }
@@ -51,6 +51,10 @@ constructor(private authStore: AuthStore, private apiService: ApiService, privat
         return throwError(() => error);
       })
     );
+  }
+
+  refreshToken() {
+    return this.apiService.post<AuthResponse>('/api/auth/refreshToken')
   }
 
   // ─── Login ───
