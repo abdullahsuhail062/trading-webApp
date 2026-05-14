@@ -1,83 +1,80 @@
-import { Inject, Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators';
-import { EMPTY, of, throwError } from 'rxjs';
+import { tap, catchError, finalize, take } from 'rxjs/operators';
+import { of, throwError, Observable, ReplaySubject } from 'rxjs';
 import { AuthStore, AuthUser } from '../auth/auth-store'; 
-import { ApiService } from './api.service';  // ✅ import ApiService
+import { ApiService } from './api.service';
 import { isPlatformBrowser } from '@angular/common';
+import { AuthResponse, LoginPayload, RegisterPayload } from '../auth/model';
 
-interface LoginPayload {
-  email: string;
-  password: string;
-}
 
-interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface AuthResponse {
-  user: {
-  id: number;
-  name: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-  avatar: string;
-  isAdmin: boolean;
-  role: string;
-}
-}
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
-constructor(private authStore: AuthStore, private apiService: ApiService, private router: Router) {
-   
-}
+  private apiService = inject(ApiService);
+  private authStore = inject(AuthStore);
+  private router = inject(Router);
 
-  // ─── Init user from cookie session ───
-  initUser() {
-    if (!isPlatformBrowser(this.platformId)) {
-    return EMPTY
+  // 1. App Initialization Stream
+  private readonly _isInitialized$ = new ReplaySubject<boolean>(1);
+  readonly isInitialized$ = this._isInitialized$.asObservable();
+
+  // 2. Reactive State Selectors
+  readonly isLoggedIn = computed(() => this.authStore.isLoggedIn());
+
+  constructor() {
+    this.initUser();
   }
-    return this.apiService.get<AuthUser>('api/me').pipe(
+
+  /**
+   * Automatically runs on app startup to check for existing sessions via HTTP-only cookies.
+   */
+  private initUser() {
+    if (!isPlatformBrowser(this.platformId)) {
+      this._isInitialized$.next(true);
+      return;
+    }
+
+    // Set loading to true before starting the check
+    this.authStore.setLoading(true);
+
+    this.apiService.get<AuthUser>('api/me').pipe(
+      // take(1) ensures the stream completes after the first response
+      take(1), 
       tap((user) => {
         this.authStore.setUser(user);
-        this.authStore.setLoading(false);
       }),
       catchError((error) => {
         this.authStore.clear();
-        return throwError(() => error);
+        // Return null so the stream doesn't break
+        return of(null);
+      }),
+      finalize(() => {
+        this.authStore.setLoading(false);
+        this._isInitialized$.next(true); 
       })
-    );
+    ).subscribe();
   }
 
-  refreshToken() {
-    return this.apiService.post<AuthResponse>('/api/auth/refreshToken')
-  }
+  // ─── AUTH ACTIONS ───
 
-  // ─── Login ───
-  login(payload: LoginPayload) {
+  login(payload: LoginPayload): Observable<AuthResponse> {
     this.authStore.setLoading(true);
-
     return this.apiService.post<AuthResponse>('api/auth/login', payload).pipe(
       tap((res) => {
-        // cookie already set by backend
         this.authStore.setUser(res.user);
         this.router.navigate(['/dashboard']);
       }),
       catchError((error) => {
         this.authStore.clear();
         return throwError(() => error);
-      })
+      }),
+      finalize(() => this.authStore.setLoading(false))
     );
   }
 
-  // ─── Register ───
-  register(payload: RegisterPayload) {
+  register(payload: RegisterPayload): Observable<AuthResponse> {
     this.authStore.setLoading(true);
-
     return this.apiService.post<AuthResponse>('api/auth/register', payload).pipe(
       tap((res) => {
         this.authStore.setUser(res.user);
@@ -86,26 +83,28 @@ constructor(private authStore: AuthStore, private apiService: ApiService, privat
       catchError((error) => {
         this.authStore.clear();
         return throwError(() => error);
-      })
+      }),
+      finalize(() => this.authStore.setLoading(false))
     );
   }
 
-  // ─── Logout (IMPORTANT FIX) ───
-  logout() {
+  logout(): Observable<any> {
     return this.apiService.post('api/auth/logout', {}).pipe(
-      tap(() => {
+      finalize(() => {
         this.authStore.clear();
         this.router.navigate(['/login']);
       })
     );
   }
 
-  // ─── Auth check ───
-  isLoggedIn(): boolean {
-    return this.authStore.isLoggedIn();
+  refreshToken(): Observable<AuthResponse> {
+    // Usually called by an Interceptor when a 401/403 occurs
+    return this.apiService.post<AuthResponse>('api/auth/refreshToken');
   }
 
-  getForexNews() {
+  // ─── DATA ACTIONS ───
+
+  getForexNews(): Observable<any> {
     return this.apiService.get('api/getForexNews');
   }
 }

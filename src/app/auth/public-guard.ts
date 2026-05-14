@@ -1,6 +1,8 @@
 import { CanActivateFn, Router, CanMatchFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { inject } from '@angular/core';
+import { filter, map, take } from 'rxjs';
+
 
 
 // export const publicGuard: CanActivateFn = (route, state) => {
@@ -12,11 +14,13 @@ import { inject } from '@angular/core';
 
 
 export const PublicGuard: CanMatchFn = () => {
-  const isLoggedIn = inject(AuthService).isLoggedIn();
+  const auth = inject(AuthService)
   const router = inject(Router);
 
-  if (isLoggedIn) {
-    return router.createUrlTree(['/dashboard']);
-  }
-  return true;
+  
+    return auth.isInitialized$.pipe(
+      filter(ready => ready), // Wait for initialization to be true
+      take(1),                // Grab the value and complete the stream
+      map(() => auth.isLoggedIn() ? true : router.parseUrl('/login'))
+    );
 };
