@@ -11,7 +11,7 @@ import { AuthResponse, LoginPayload, RegisterPayload } from '../auth/model';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
-  private apiService = inject(ApiService);
+  //private apiService = inject(ApiService);
   private authStore = inject(AuthStore);
   private router = inject(Router);
 
@@ -22,7 +22,7 @@ export class AuthService {
   // 2. Reactive State Selectors
   readonly isLoggedIn = computed(() => this.authStore.isLoggedIn());
 
-  constructor() {
+  constructor(private apiService: ApiService) {
     this.initUser();
   }
 
