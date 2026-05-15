@@ -10,8 +10,11 @@ import { AuthStore } from './auth/auth-store';
   template: '<router-outlet/>',
   styleUrl: './app.css'
 })
-export class App  {
+export class App implements OnInit  {
 
   constructor(private authService: AuthService, private authStore: AuthStore) {}
-  
+ngOnInit(): void {
+  this.authService.initUser()
+}  
 }
+

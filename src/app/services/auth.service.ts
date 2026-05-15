@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   
-  private initUser() {
+   initUser() {
   // 1. SSR Guard: Immediate exit for server-side rendering
   if (!isPlatformBrowser(this.platformId)) {
     this._isInitialized$.next(true);
