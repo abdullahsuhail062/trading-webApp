@@ -11,13 +11,17 @@ export const AuthGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
-  if (!isPlatformBrowser(platformId)) {
-    return false; 
+  if (auth.isLoggedIn()) {
+    return true
   }
+  return router.parseUrl('/auth')
+  // if (!isPlatformBrowser(platformId)) {
+  //   return false; 
+  // }
 
-  return auth.isInitialized$.pipe(
-    filter(ready => ready), // Wait for initialization to be true
-    take(1),                // Grab the value and complete the stream
-    map(() => auth.isLoggedIn() ?true: router.parseUrl('/auth') 
-  ));
+  // return auth.isInitialized$.pipe(
+  //   filter(ready => ready), // Wait for initialization to be true
+  //   take(1),                // Grab the value and complete the stream
+  //   map(() => auth.isLoggedIn() ?true: router.parseUrl('/auth') 
+  // ));
 };
