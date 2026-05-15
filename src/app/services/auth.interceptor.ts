@@ -1,4 +1,5 @@
 // src/app/interceptors/auth.interceptor.ts
+import { BehaviorSubject} from 'rxjs';
 
 import {
   HttpErrorResponse,
@@ -34,80 +35,127 @@ const PUBLIC_ENDPOINTS = [
 ];
 
 
-// Signal-based refresh state
-const isRefreshing = signal(false);
+// // Signal-based refresh state
+// const isRefreshing = signal(false);
 
-// Signal for refresh completion
-const refreshCompleted = signal(false);
+// // Signal for refresh completion
+// const refreshCompleted = signal(false);
+
+// export const authInterceptor: HttpInterceptorFn = (req, next) => {
+
+//   const authService = inject(AuthService);
+//   const router = inject(Router);
+
+//   const isPublic = PUBLIC_ENDPOINTS.some(endpoint =>
+//     req.url.includes(endpoint)
+//   );
+
+//   // Always send cookies
+//   const authReq = req.clone({
+//     withCredentials: true
+//   });
+
+//   if (isPublic) {
+//     return next(authReq);
+//   }
+
+//   return next(authReq).pipe(
+
+//     catchError((error: HttpErrorResponse) => {
+
+//       // Only handle unauthorized errors
+//       if (error.status !== 401) {
+//         return throwError(() => error);
+//       }
+
+//       // If refresh already happening
+//       if (isRefreshing()) {
+
+//         // Wait until refresh completes
+//         return toObservable(refreshCompleted).pipe(
+
+//           filter(completed => completed),
+
+//           take(1),
+
+//           switchMap(() => next(authReq))
+//         );
+//       }
+
+//       // Start refresh
+//       isRefreshing.set(true);
+//       refreshCompleted.set(false);
+
+//       return authService.refreshToken().pipe(
+
+//         switchMap(() => {
+
+//           // Notify waiting requests
+//           refreshCompleted.set(true);
+
+//           // Retry original request
+//           return next(authReq);
+//         }),
+
+//         catchError((refreshError) => {
+
+//           authService.logout()
+
+//           router.navigate(['/login']);
+
+//           return throwError(() => refreshError);
+//         }),
+
+//         finalize(() => {
+
+//           isRefreshing.set(false);
+//         })
+//       );
+//     })
+//   );
+// };
+
+const refreshTokenSubject = new BehaviorSubject<boolean>(false);
+let isRefreshingFlag = false; // Simple variable is safer here than a signal
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const isPublic = PUBLIC_ENDPOINTS.some(endpoint =>
-    req.url.includes(endpoint)
-  );
+  const isPublic = PUBLIC_ENDPOINTS.some(endpoint => req.url.includes(endpoint));
+  const authReq = req.clone({ withCredentials: true });
 
-  // Always send cookies
-  const authReq = req.clone({
-    withCredentials: true
-  });
-
-  if (isPublic) {
-    return next(authReq);
-  }
+  if (isPublic) return next(authReq);
 
   return next(authReq).pipe(
-
     catchError((error: HttpErrorResponse) => {
+      if (error.status !== 401) return throwError(() => error);
 
-      // Only handle unauthorized errors
-      if (error.status !== 401) {
-        return throwError(() => error);
-      }
-
-      // If refresh already happening
-      if (isRefreshing()) {
-
-        // Wait until refresh completes
-        return toObservable(refreshCompleted).pipe(
-
-          filter(completed => completed),
-
+      if (isRefreshingFlag) {
+        // 2. Wait for the subject to emit 'true' (meaning refresh finished)
+        return refreshTokenSubject.pipe(
+          filter(success => success === true),
           take(1),
-
-          switchMap(() => next(authReq))
+          // IMPORTANT: Clone again to ensure fresh request state
+          switchMap(() => next(req.clone({ withCredentials: true })))
         );
       }
 
-      // Start refresh
-      isRefreshing.set(true);
-      refreshCompleted.set(false);
+      isRefreshingFlag = true;
+      refreshTokenSubject.next(false); // Close the gate
 
       return authService.refreshToken().pipe(
-
         switchMap(() => {
-
-          // Notify waiting requests
-          refreshCompleted.set(true);
-
-          // Retry original request
-          return next(authReq);
+          isRefreshingFlag = false;
+          refreshTokenSubject.next(true); // Open the gate
+          return next(req.clone({ withCredentials: true }));
         }),
-
         catchError((refreshError) => {
-
-          authService.logout()
-
+          isRefreshingFlag = false;
+          refreshTokenSubject.next(false);
+          authService.logout();
           router.navigate(['/login']);
-
           return throwError(() => refreshError);
-        }),
-
-        finalize(() => {
-
-          isRefreshing.set(false);
         })
       );
     })
