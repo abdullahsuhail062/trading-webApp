@@ -12,6 +12,6 @@ export const AuthGuard: CanActivateFn = () => {
   return auth.isInitialized$.pipe(
     filter(ready => ready), // Wait for initialization to be true
     take(1),                // Grab the value and complete the stream
-    map(() => auth.isLoggedIn() ? true : router.parseUrl('/auth'))
-  );
+    map(() => auth.isLoggedIn() ?true: false 
+  ));
 };
