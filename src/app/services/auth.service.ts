@@ -23,7 +23,7 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this.authStore.isLoggedIn());
 
   constructor(private apiService: ApiService) {
-    //this.initUser();
+    this.initUser();
   }
 
   
