@@ -23,44 +23,44 @@ export class AuthService {
   readonly isLoggedIn = computed(() => this.authStore.isLoggedIn());
 
   constructor() {
-    //this.initUser();
+    this.initUser();
   }
 
   
-//   private initUser() {
-//   // 1. SSR Guard: Immediate exit for server-side rendering
-//   if (!isPlatformBrowser(this.platformId)) {
-//     this._isInitialized$.next(true);
-//     return;
-//   }
+  private initUser() {
+  // 1. SSR Guard: Immediate exit for server-side rendering
+  if (!isPlatformBrowser(this.platformId)) {
+    this._isInitialized$.next(true);
+    return;
+  }
 
-//   this.authStore.setLoading(true);
+  this.authStore.setLoading(true);
 
-//   this.apiService.get<AuthUser>('api/me').pipe(
-//     take(1), // Essential: ensures the stream closes after the first result
-//     tap((user) => {
-//       this.authStore.setUser(user);
-//     }),
-//     catchError((error) => {
-//       // Log the error for debugging, but don't break the app
-//       console.error('Auth initialization failed:', error);
-//       this.authStore.clear();
-//       return of(null);
-//     }),
-//     finalize(() => {
-//       // CRITICAL ORDER:
-//       // First: stop the spinner
-//       this.authStore.setLoading(false);
-//       // Last: open the gate for the Router Guards
-//       this._isInitialized$.next(true); 
-//     })
-//   ).subscribe({
-//     error: (err) => {
-//        // Secondary safety: Ensure the app unblocks even on catastrophic network failure
-//        this._isInitialized$.next(true);
-//     }
-//   });
-// }
+  this.apiService.get<AuthUser>('api/me').pipe(
+    take(1), // Essential: ensures the stream closes after the first result
+    tap((user) => {
+      this.authStore.setUser(user);
+    }),
+    catchError((error) => {
+      // Log the error for debugging, but don't break the app
+      console.error('Auth initialization failed:', error);
+      this.authStore.clear();
+      return of(null);
+    }),
+    finalize(() => {
+      // CRITICAL ORDER:
+      // First: stop the spinner
+      this.authStore.setLoading(false);
+      // Last: open the gate for the Router Guards
+      this._isInitialized$.next(true); 
+    })
+  ).subscribe({
+    error: (err) => {
+       // Secondary safety: Ensure the app unblocks even on catastrophic network failure
+       this._isInitialized$.next(true);
+    }
+  });
+}
 
   // ─── AUTH ACTIONS ───
 
