@@ -64,13 +64,7 @@ export class AuthService {
       // Last: open the gate for the Router Guards
       this._isInitialized$.next(true); 
     })
-  ).subscribe({
-    error: (err) => {
-       // Secondary safety: Ensure the app unblocks even on catastrophic network failure
-       this._isInitialized$.next(true);
-    }
-  });
-}
+  ).subscribe({});}
 
   // ─── AUTH ACTIONS ───
 
