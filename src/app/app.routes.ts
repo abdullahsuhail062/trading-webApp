@@ -8,6 +8,6 @@ import { from } from 'rxjs';
 export const routes: Routes = [
   { path: '', component: LandingComponent },
   {path: 'auth', component: AuthComponent},
-    {path: 'dashboard', component: Dashboard, canActivate: [AuthGuard] },
+    {path: 'dashboard', component: Dashboard },
   { path: '**', redirectTo: '' }
 ];
