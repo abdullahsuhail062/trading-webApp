@@ -46,7 +46,7 @@ export class AuthService {
     catchError((error) => {
       // Log the error for debugging, but don't break the app
       console.error('Auth initialization failed:', error);
-      console.log('error occurred');
+      console.log('error occurred', error.error.error, error);
       
       this.authStore.clear();
       return of(null);
