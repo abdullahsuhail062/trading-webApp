@@ -43,14 +43,20 @@ export class AuthService {
   console.log('app initialized');
   
     }),
-    catchError((error) => {
-      // Log the error for debugging, but don't break the app
-      console.error('Auth initialization failed:', error);
-      console.log('error occurred', error.error.error, error);
-      
-      this.authStore.clear();
-      return of(null);
-    }),
+  catchError((error) => {
+  // 1. Log the high-level error (status code, url, etc.)
+  console.error('Auth initialization failed. Status:', error.status);
+
+  // 2. Safely log the backend message if it exists
+  const backendError = error?.error?.message || error?.error?.error || 'No backend message';
+  console.log('Backend says:', backendError);
+
+  // 3. Clear the store so the app knows the user is definitely logged out
+  this.authStore.clear();
+
+  // 4. Return null to allow finalize() to run and unlock the app
+  return of(null);
+}),
     finalize(() => {
       // CRITICAL ORDER:
       // First: stop the spinner
