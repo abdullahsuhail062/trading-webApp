@@ -44,9 +44,10 @@ export class AuthService {
   
     }),
   catchError((error) => {
-          this._isInitialized$.next(true); 
   // 1. Log the high-level error (status code, url, etc.)
   console.error('Auth initialization failed. Status:', error.status);
+  console.log(this.authStore.user(),' if user is null or not');
+  
 
   // 2. Safely log the backend message if it exists
   const backendError = error?.error?.message || error?.error?.error || 'No backend message';
