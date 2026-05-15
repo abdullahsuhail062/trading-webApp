@@ -14,7 +14,7 @@ export class App implements OnInit  {
 
   constructor(private authService: AuthService, private authStore: AuthStore) {}
 ngOnInit(): void {
-  this.authService.initUser()
+  //this.authService.initUser()
 }  
 }
 
