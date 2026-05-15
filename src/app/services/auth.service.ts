@@ -44,6 +44,7 @@ export class AuthService {
   
     }),
   catchError((error) => {
+          this._isInitialized$.next(true); 
   // 1. Log the high-level error (status code, url, etc.)
   console.error('Auth initialization failed. Status:', error.status);
 
@@ -53,6 +54,7 @@ export class AuthService {
 
   // 3. Clear the store so the app knows the user is definitely logged out
   this.authStore.clear();
+  
 
   // 4. Return null to allow finalize() to run and unlock the app
   return of(null);
