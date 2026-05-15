@@ -40,10 +40,14 @@ export class AuthService {
     take(1), // Essential: ensures the stream closes after the first result
     tap((user) => {
       this.authStore.setUser(user);
+  console.log('app initialized');
+  
     }),
     catchError((error) => {
       // Log the error for debugging, but don't break the app
       console.error('Auth initialization failed:', error);
+      console.log('error occurred');
+      
       this.authStore.clear();
       return of(null);
     }),
