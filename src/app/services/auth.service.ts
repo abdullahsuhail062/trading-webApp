@@ -1,3 +1,4 @@
+import { firstValueFrom} from 'rxjs';
 import { Injectable, PLATFORM_ID, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap, catchError, finalize, take } from 'rxjs/operators';
@@ -27,47 +28,44 @@ export class AuthService {
   }
 
   
-   initUser() {
+
+
+initUser(): Promise<any> { // 1. Add return type Promise
   // 1. SSR Guard: Immediate exit for server-side rendering
   if (!isPlatformBrowser(this.platformId)) {
     this._isInitialized$.next(true);
-    return;
+    return Promise.resolve(); // 2. Return a resolved promise for SSR
   }
 
   this.authStore.setLoading(true);
 
-  this.apiService.get<AuthUser>('api/me').pipe(
-    take(1), // Essential: ensures the stream closes after the first result
+  // 3. Store the stream in a variable
+  const init$ = this.apiService.get<AuthUser>('api/me').pipe(
+    take(1), 
     tap((user) => {
       this.authStore.setUser(user);
-  console.log('app initialized');
-  
+      console.log('app initialized');
     }),
-  catchError((error) => {
-  // 1. Log the high-level error (status code, url, etc.)
-  console.error('Auth initialization failed. Status:', error.status);
-  console.log(this.authStore.user(),' if user is null or not');
-  
+    catchError((error) => {
+      console.error('Auth initialization failed. Status:', error.status);
+      console.log(this.authStore.user(), ' if user is null or not');
 
-  // 2. Safely log the backend message if it exists
-  const backendError = error?.error?.message || error?.error?.error || 'No backend message';
-  console.log('Backend says:', backendError);
+      const backendError = error?.error?.message || error?.error?.error || 'No backend message';
+      console.log('Backend says:', backendError);
 
-  // 3. Clear the store so the app knows the user is definitely logged out
-  this.authStore.clear();
-  
+      this.authStore.clear();
 
-  // 4. Return null to allow finalize() to run and unlock the app
-  return of(null);
-}),
+      return of(null);
+    }),
     finalize(() => {
-      // CRITICAL ORDER:
-      // First: stop the spinner
       this.authStore.setLoading(false);
-      // Last: open the gate for the Router Guards
       this._isInitialized$.next(true); 
     })
-  ).subscribe({});}
+  );
+
+  // 4. Convert to Promise and RETURN it. Remove the manual .subscribe({})
+  return firstValueFrom(init$);
+}
 
   // ─── AUTH ACTIONS ───
 
