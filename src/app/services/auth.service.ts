@@ -26,9 +26,7 @@ export class AuthService {
     this.initUser();
   }
 
-  /**
-   * Automatically runs on app startup to check for existing sessions via HTTP-only cookies.
-   */
+  
   private initUser() {
     if (!isPlatformBrowser(this.platformId)) {
       this._isInitialized$.next(true);
