@@ -31,6 +31,8 @@ export class AuthService {
 
 
 initUser(): Promise<any> { // 1. Add return type Promise
+  console.log('call triggered successfully!');
+  
   // 1. SSR Guard: Immediate exit for server-side rendering
   if (!isPlatformBrowser(this.platformId)) {
     this._isInitialized$.next(true);
