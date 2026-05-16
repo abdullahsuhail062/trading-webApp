@@ -48,8 +48,6 @@ initUser(): Promise<any> { // 1. Add return type Promise
     }),
     catchError((error) => {
       console.error('Auth initialization failed. Status:', error.status);
-      console.log(this.authStore.user(), ' if user is null or not');
-
       const backendError = error?.error?.message || error?.error?.error || 'No backend message';
       console.log('Backend says:', backendError);
 
