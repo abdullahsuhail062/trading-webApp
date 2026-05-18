@@ -173,5 +173,7 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
   const newReq = req.clone({
     withCredentials: true,
   });
+  console.log(newReq, 'token being inspected');
+  
   return next(newReq);
 }
