@@ -1,9 +1,14 @@
 // src/app/interceptors/auth.interceptor.ts
 import { BehaviorSubject} from 'rxjs';
 
+
+
 import {
   HttpErrorResponse,
-  HttpInterceptorFn
+  HttpHandler,
+  HttpHandlerFn,
+  HttpInterceptorFn,
+  HttpRequest
 } from '@angular/common/http';
 
 import {
@@ -115,49 +120,58 @@ const PUBLIC_ENDPOINTS = [
 //   );
 // };
 
-const refreshTokenSubject = new BehaviorSubject<boolean>(false);
-let isRefreshingFlag = false; // Simple variable is safer here than a signal
+// const refreshTokenSubject = new BehaviorSubject<boolean>(false);
+// let isRefreshingFlag = false; // Simple variable is safer here than a signal
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+// export const authInterceptor: HttpInterceptorFn = (req, next) => {
+//   const authService = inject(AuthService);
+//   const router = inject(Router);
 
-  const isPublic = PUBLIC_ENDPOINTS.some(endpoint => req.url.includes(endpoint));
-  const authReq = req.clone({ withCredentials: true });
+//   const isPublic = PUBLIC_ENDPOINTS.some(endpoint => req.url.includes(endpoint));
+//   const authReq = req.clone({ withCredentials: true });
 
-  if (isPublic) return next(authReq);
+//   if (isPublic) return next(authReq);
 
-  return next(authReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error.status !== 401) return throwError(() => error);
+//   return next(authReq).pipe(
+//     catchError((error: HttpErrorResponse) => {
+//       if (error.status !== 401) return throwError(() => error);
 
-      if (isRefreshingFlag) {
-        // 2. Wait for the subject to emit 'true' (meaning refresh finished)
-        return refreshTokenSubject.pipe(
-          filter(success => success === true),
-          take(1),
-          // IMPORTANT: Clone again to ensure fresh request state
-          switchMap(() => next(req.clone({ withCredentials: true })))
-        );
-      }
+//       if (isRefreshingFlag) {
+//         // 2. Wait for the subject to emit 'true' (meaning refresh finished)
+//         return refreshTokenSubject.pipe(
+//           filter(success => success === true),
+//           take(1),
+//           // IMPORTANT: Clone again to ensure fresh request state
+//           switchMap(() => next(req.clone({ withCredentials: true })))
+//         );
+//       }
 
-      isRefreshingFlag = true;
-      refreshTokenSubject.next(false); // Close the gate
+//       isRefreshingFlag = true;
+//       refreshTokenSubject.next(false); // Close the gate
 
-      return authService.refreshToken().pipe(
-        switchMap(() => {
-          isRefreshingFlag = false;
-          refreshTokenSubject.next(true); // Open the gate
-          return next(req.clone({ withCredentials: true }));
-        }),
-        catchError((refreshError) => {
-          isRefreshingFlag = false;
-          refreshTokenSubject.next(false);
-          authService.logout();
-          router.navigate(['/login']);
-          return throwError(() => refreshError);
-        })
-      );
-    })
-  );
-};
+//       return authService.refreshToken().pipe(
+//         switchMap(() => {
+//           isRefreshingFlag = false;
+//           refreshTokenSubject.next(true); // Open the gate
+//           return next(req.clone({ withCredentials: true }));
+//         }),
+//         catchError((refreshError) => {
+//           isRefreshingFlag = false;
+//           refreshTokenSubject.next(false);
+//           authService.logout();
+//           router.navigate(['/login']);
+//           return throwError(() => refreshError);
+//         })
+//       );
+//     })
+//   );
+// };
+
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
+  // Inject the current `AuthService` and use it to get an authentication token:
+  // Clone the request to add the authentication header.
+  const newReq = req.clone({
+    withCredentials: true,
+  });
+  return next(newReq);
+}
