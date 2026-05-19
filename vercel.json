@@ -4,6 +4,9 @@
     {
       "source": "/api/(.*)",
       "destination": "https://backend-web-app.vercel.app/api/$1"
+    }, {
+      "source": "/(.*)",
+      "destination": "/dist/trading-webApp/browser/index.html"
     }
   ]
 }
